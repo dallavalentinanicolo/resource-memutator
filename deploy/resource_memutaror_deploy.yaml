@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: memory-mutating-webhook
+  name: resource-memutator-webhook
   labels:
-    app: memory-mutating-webhook 
+    app: resource-memutator-webhook
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: memory-mutating-webhook
+      app: resource-memutator-webhook
   template:
     metadata:
       labels:
-        app: memory-mutating-webhook
+        app: resource-memutator-webhook
     spec:
       containers:
       - name: webhook
-        image: webhook-server:latest
+        image: resource-memutator:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 443
@@ -24,23 +24,18 @@ spec:
         - name: tls-certs
           mountPath: /Certificate
           readOnly: true
-        env:
-        - name: TLS_CERT_FILE
-          value: "/Certificate/tls.crt"
-        - name: TLS_KEY_FILE
-          value: "/Certificate/tls.key"
       volumes:
       - name: tls-certs
         secret:
-          secretName: memory-webhook-tls
+          secretName: resource-memutator-webhook-tls-secret
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: memory-mutating-webhook-svc
+  name: resource-memutator-webhook-svc
 spec:
   ports:
     - port: 443
       targetPort: 443
   selector:
-    app: memory-mutating-webhook
+    app: resource-memutator-webhook

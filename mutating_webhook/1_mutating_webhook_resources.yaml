@@ -1,16 +1,18 @@
+# https://cert-manager.io/docs/concepts/ca-injector/
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
-  name: memory-mutating-webhook
+  name: resource-memutator-webhook
+  annotations:
+    cert-manager.io/inject-ca-from: default/resource-memutator-webhook-tls # annotations for Injection
 webhooks:
-  - name: memory-mutator.k8s.io
+  - name: resource-memutator.k8s.io
     clientConfig:
       service:
-        name: memory-mutating-webhook-svc
+        name: resource-memutator-webhook-svc
         namespace: default
         path: "/mutate"
-        port: 443  # Ensure this is 443
-      caBundle: ${CA_BUNDLE}
+        port: 443
     rules:
       - operations: ["CREATE", "UPDATE"]
         apiGroups: ["apps"]
