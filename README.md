@@ -4,6 +4,12 @@
 
 This is the initial push of a project aimed at creating a custom Mutation Webhook called Resource memutator. The webhook is still in its alpha phase, and it is not yet production-ready. I'm learning as I develop it, exploring advanced Kubernetes concepts as an SRE/DevOps and enhancing my Go skills through hands-on experience. At this stage, it does not mutate resources, but it logs useful information about incoming requests and any memory limit mismatches. Any suggestions or help are more than welcome!
 
+My webhook intercepts API requests when resources like Deployments or StatefulSets are created or updated. Instead of modifying those resources, it logs useful details, such as differences between requested and actual memory limits. This helps track configuration issues. In the near future, I plan to implement functionality that will automatically mutate the resource, ensuring that resource limits match the resource requests based on specific rules.
+
+In short kubeapi will know as we will registry this custom MutatingWebhookConfiguration, you can check under the list of MutatingWebhook:
+
+`/apis/admissionregistration.k8s.io/v1/mutatingwebhookconfigurations`
+
 ## Upcoming Improvements
 
 - Implement functionality to mutate the resource, ensuring the resource limits match the resource requests. 
