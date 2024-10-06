@@ -1,0 +1,10 @@
+.DS_Store
+.env
+*.key
+*.pem
+config/*.yml
+config/*.json
+*.log
+*Certificate
+*tls.crt
+*tls*
