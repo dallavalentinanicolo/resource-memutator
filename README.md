@@ -1,8 +1,8 @@
 # README
 
-Project Overview 
+## Project Overview called "Resource Memutator"
 
-This is the initial push of a project aimed at creating a Mutation Webhook. The webhook is still in its alpha phase, and it is not yet production-ready. I'm learning as I develop it, exploring advanced Kubernetes concepts as an SRE/DevOps and enhancing my Go skills through hands-on experience. At this stage, it does not mutate resources, but it logs useful information about incoming requests and any memory limit mismatches. Any suggestions or help are more than welcome!
+This is the initial push of a project aimed at creating a custom Mutation Webhook called Resource memutator. The webhook is still in its alpha phase, and it is not yet production-ready. I'm learning as I develop it, exploring advanced Kubernetes concepts as an SRE/DevOps and enhancing my Go skills through hands-on experience. At this stage, it does not mutate resources, but it logs useful information about incoming requests and any memory limit mismatches. Any suggestions or help are more than welcome!
 
 ## Upcoming Improvements
 
