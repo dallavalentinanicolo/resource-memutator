@@ -2,9 +2,9 @@
 
 ## Project Overview called "Resource Memutator"
 
-This is the initial push of a project aimed at creating a custom Mutation Webhook called Resource memutator. The webhook is still in its alpha phase, and it is not yet production-ready. I'm learning as I develop it, exploring advanced Kubernetes concepts as an SRE/DevOps and enhancing my Go skills through hands-on experience. At this stage, it does not mutate resources, but it logs useful information about incoming requests and any memory limit mismatches. Any suggestions or help are more than welcome!
+This is the initial push of a project aimed at creating a custom Mutation Webhook called Resource Mutator. The webhook is currently in its alpha phase and is not yet production-ready. I’m learning as I develop it, exploring advanced Kubernetes concepts as an SRE/DevOps while enhancing my Go skills through hands-on experience. Any suggestions or assistance are more than welcome!
 
-My webhook intercepts API requests when resources like Deployments or StatefulSets are created or updated. Instead of modifying those resources, it logs useful details, such as differences between requested and actual memory limits. This helps track configuration issues. In the near future, I plan to implement functionality that will automatically mutate the resource, ensuring that resource limits match the resource requests based on specific rules.
+The webhook intercepts API requests when resources like Deployments or StatefulSets are created or updated. It checks if there is a difference between the requested memory and the actual memory limits. If a discrepancy is found, the webhook mutates the resource by adjusting the memory limit to match the requested memory. This helps ensure the best configuration practices are followed.
 
 In short kubeapi will know as we will registry this custom MutatingWebhookConfiguration, you can check under the list of MutatingWebhook:
 
@@ -12,7 +12,10 @@ In short kubeapi will know as we will registry this custom MutatingWebhookConfig
 
 ## Upcoming Improvements
  
-- Move the Docker build to Docker Hub and automate the image build and release process.
+- add label or annotations to a pod once this webhook modify (`IN PROGRESS`)
+- Set custom resource quotas (like enforcing that certain types of workloads have specific resource limits based on labels or annotations).
+- possibility to disable the mutations based on namespace (via env variable)
+- Move the Docker build to Docker Hub (`IN PROGRESS`)
 - Transition the deployment to use Helm for easier management and scalability.
 
 Stay tuned for further updates as I push more changes!
@@ -83,4 +86,3 @@ in the follow logs you should seen:
 delete the kind cluster
 
 `kind delete clusters kind`
-
