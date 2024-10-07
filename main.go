@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	admissionv1 "k8s.io/api/admission/v1"
 	appsv1 "k8s.io/api/apps/v1"
@@ -57,6 +58,7 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		checkMemoryLimits(deployment.Spec.Template.Spec.Containers, deployment.Name, "Deployment")
+		applyPatchIfNeeded(deployment.Spec.Template.Spec.Containers, &response)
 	case "StatefulSet":
 		var statefulset appsv1.StatefulSet
 		if err := json.Unmarshal(admissionReview.Request.Object.Raw, &statefulset); err != nil {
@@ -64,6 +66,7 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		checkMemoryLimits(statefulset.Spec.Template.Spec.Containers, statefulset.Name, "StatefulSet")
+		applyPatchIfNeeded(statefulset.Spec.Template.Spec.Containers, &response)
 	}
 
 	// Wrap the response into an AdmissionReview
@@ -80,9 +83,41 @@ func checkMemoryLimits(containers []corev1.Container, resourceName, resourceType
 
 		// Log if requests and limits differ
 		if requestMem.Cmp(limitMem) != 0 {
-			log.Printf("Container '%s' in %s '%s' has mismatched memory requests and limits. Request: %s, Limit: %s\n",
+			log.Printf("Container '%s' in %s '%s' has mismatched memory requests and limits. Request: %s, Limit: %s\n, I'm going",
 				container.Name, resourceType, resourceName, requestMem.String(), limitMem.String())
 		}
+	}
+}
+
+// updateMemoryLimits checks and updates the memory limits to match the requests
+func updateMemoryLimits(containers []corev1.Container) []map[string]string {
+	var patches []map[string]string
+	for i, container := range containers {
+		requestMem := container.Resources.Requests[corev1.ResourceMemory]
+		limitMem := container.Resources.Limits[corev1.ResourceMemory]
+
+		// If request and limit don't match, patch the limit to match the request
+		if requestMem.Cmp(limitMem) != 0 {
+			patch := map[string]string{
+				"op":    "replace",
+				"path":  `/spec/template/spec/containers/` + strconv.Itoa(i) + "/resources/limits/memory",
+				"value": requestMem.String(),
+			}
+			patches = append(patches, patch)
+		}
+		log.Printf("The memory limit for the container %s has been changed from %s to %s", container.Name, limitMem.String(), requestMem.String())
+	}
+	return patches
+}
+
+// applyPatchIfNeeded checks and applies a patch if memory limits need to be updated
+func applyPatchIfNeeded(containers []corev1.Container, response *admissionv1.AdmissionResponse) {
+	patchOps := updateMemoryLimits(containers)
+	if len(patchOps) > 0 {
+		patchBytes, _ := json.Marshal(patchOps)
+		response.Patch = patchBytes
+		patchType := admissionv1.PatchTypeJSONPatch
+		response.PatchType = &patchType
 	}
 }
 
@@ -93,7 +128,6 @@ func main() {
 		err    error
 		server *http.Server
 	)
-	// TODO improve the certification generation maybe Cert manager
 	// func of library TLS then tls contains a library LoadX509KeyPair
 	cert, err = tls.LoadX509KeyPair("/Certificate/tls.crt", "/Certificate/tls.key")
 	if err != nil {

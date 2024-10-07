@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: busybox-statefulset
-  name: kube-system
+  namespace: kube-system
 spec:
   serviceName: "busybox-service"
   replicas: 2

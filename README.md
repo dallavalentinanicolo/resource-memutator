@@ -11,8 +11,7 @@ In short kubeapi will know as we will registry this custom MutatingWebhookConfig
 `/apis/admissionregistration.k8s.io/v1/mutatingwebhookconfigurations`
 
 ## Upcoming Improvements
-
-- Implement functionality to mutate the resource, ensuring the resource limits match the resource requests. 
+ 
 - Move the Docker build to Docker Hub and automate the image build and release process.
 - Transition the deployment to use Helm for easier management and scalability.
 
