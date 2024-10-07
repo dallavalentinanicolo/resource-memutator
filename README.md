@@ -83,3 +83,4 @@ in the follow logs you should seen:
 delete the kind cluster
 
 `kind delete clusters kind`
+
